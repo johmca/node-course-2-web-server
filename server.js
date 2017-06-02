@@ -23,7 +23,7 @@ var app = express();
 //headers, footers etc.
 //Tell hbs where to find these
 hbs.registerPartials(__dirname + '/Views/partials');
-console.log('Hello World');
+
 //Use .set() to specify the view engine for express to be hbs
 app.set('views', __dirname + '/Views');
 app.set('view engine','hbs');
@@ -54,7 +54,7 @@ app.use((req,res,next)=>{
   fs.appendFile('server.log',logText+'\n');
   next();
 });
-console.log('Hello World2');
+
 //Add another bit of middleware to render the site maintenance screen
 //this time we don't want to move on - we want to stick on the maintenance screen
 //so don't issue .next()
@@ -69,7 +69,7 @@ console.log('Hello World2');
 //Note that we should use the system variable __dirname to get our apps
 //root and then concatenate the fodler onto it
 app.use(express.static(__dirname + '/Public'));
-console.log('Hello World3');
+
 //Use another feature of hbs to register helper functions
 //This allows us to code some logic that needs to run in multiple places in
 //our website in one place e.g. previously we had logic t get the current year
@@ -83,7 +83,7 @@ hbs.registerHelper('getCurrentYear',()=>{
 hbs.registerHelper('screamIt',(text)=>{
   return text.toUpperCase();
 });
-console.log('Hello World4');
+
 //Set up HTTP route handlers i.e. fucntions to call when clients issue
 //requests to particular URLs
 
@@ -118,6 +118,14 @@ app.get('/about',(req, res)=>{
       // currentYear:new Date().getFullYear()
     });
 });
+
+//Create a route for projects page and render using projects.hbs
+app.get('/projects',(req, res)=>{
+    res.render('projects.hbs',{
+      pageTitle:'Projects Page',
+    });
+});
+
 
 //Create a 3rd route for errors
 app.get('/bad',(req, res)=>{
