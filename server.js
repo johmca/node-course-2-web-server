@@ -1,3 +1,6 @@
+//Load Cloud Foundry Environment variable parsing library
+const cfenv = require("cfenv");
+
 //Load express library
 const express = require('express');
 
@@ -7,6 +10,11 @@ const hbs = require('hbs');
 //Load fs libarary for local file system interaction
 const fs = require('fs');
 
+//Get port number.  If running locally this defaults to 6003.
+//If running on Cloud Foundry this is obtained from VCAP environment variables
+var appEnv = cfenv.getAppEnv();
+var port = appEnv.port;
+
 //Create our app as an instance of express
 var app = express();
 
@@ -15,8 +23,9 @@ var app = express();
 //headers, footers etc.
 //Tell hbs where to find these
 hbs.registerPartials(__dirname + '/Views/partials');
-
+console.log('Hello World');
 //Use .set() to specify the view engine for express to be hbs
+app.set('views', __dirname + '/Views');
 app.set('view engine','hbs');
 
 //Express middleware is a means of extending express functionality
@@ -45,7 +54,7 @@ app.use((req,res,next)=>{
   fs.appendFile('server.log',logText+'\n');
   next();
 });
-
+console.log('Hello World2');
 //Add another bit of middleware to render the site maintenance screen
 //this time we don't want to move on - we want to stick on the maintenance screen
 //so don't issue .next()
@@ -60,7 +69,7 @@ app.use((req,res,next)=>{
 //Note that we should use the system variable __dirname to get our apps
 //root and then concatenate the fodler onto it
 app.use(express.static(__dirname + '/Public'));
-
+console.log('Hello World3');
 //Use another feature of hbs to register helper functions
 //This allows us to code some logic that needs to run in multiple places in
 //our website in one place e.g. previously we had logic t get the current year
@@ -74,7 +83,7 @@ hbs.registerHelper('getCurrentYear',()=>{
 hbs.registerHelper('screamIt',(text)=>{
   return text.toUpperCase();
 });
-
+console.log('Hello World4');
 //Set up HTTP route handlers i.e. fucntions to call when clients issue
 //requests to particular URLs
 
@@ -85,7 +94,7 @@ hbs.registerHelper('screamIt',(text)=>{
 //    - request
 //    - response
 app.get ('/',(req, res)=>{
-  //res.send('<h1>Hello from Express..<h1>');
+  // res.send('<h1>Hello from Express..<h1>');
   // res.send({
   //   name: 'John',
   //   likes:['cake','swimming','guitars']
@@ -124,6 +133,6 @@ app.get('/bad',(req, res)=>{
 //.listen() takes 2 parms
 // a) The port number
 // b) An optional callback function
-app.listen(3000,()=>{
-  console.log('Listening on port 3000...');
+app.listen(port,()=>{
+  console.log(`Listening on port ${port}...`);
 });
